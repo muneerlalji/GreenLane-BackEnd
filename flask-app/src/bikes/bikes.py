@@ -19,3 +19,23 @@ def get_bikes():
     the_response.status_code = 200
     the_response.mimetype = 'application/json'
     return the_response
+
+#Add new bike
+@users.route('/bikes', methods=['POST'])
+def add_bike():
+    current_app.logger.info('processing form data')
+    req_data = request.get_json()
+    current_app.logger.info(req_data)
+    
+    b_type = req_data['type']
+    b_location = req_data['location']
+
+    insert_stmt = 'INSERT into stations (location, capacity) VALUES ('
+    insert_stmt += b_type + ', ' + b_location + ')'
+
+    current_app.logger.info(insert_stmt)
+
+    cursor = db.get_db().cursor()
+    cursor.execute(insert_stmt)
+    db.get_db().commit()
+    return 'Success'

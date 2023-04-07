@@ -19,3 +19,27 @@ def get_user(email):
     the_response.mimetype = 'application/json'
     return the_response
 
+#Add new user
+@users.route('/users', methods=['POST'])
+def add_user():
+    current_app.logger.info('processing form data')
+    req_data = request.get_json()
+    current_app.logger.info(req_data)
+    
+    u_first = req_data['first_name']
+    u_last = req_data['last_name']
+    u_email = req_data['email']
+    u_dob = req_data['dob']
+    u_address = req_data['address']
+
+    insert_stmt = 'INSERT into users (first_name, last_name, email, dob, address) VALUES ('
+    insert_stmt += u_first + ', ' + u_last + ", " + u_email + ", " + u_dob + ", " + u_address + ')'
+
+    current_app.logger.info(insert_stmt)
+
+    cursor = db.get_db().cursor()
+    cursor.execute(insert_stmt)
+    db.get_db().commit()
+    return 'Success'
+
+    

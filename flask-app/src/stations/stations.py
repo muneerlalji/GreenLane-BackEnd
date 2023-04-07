@@ -20,3 +20,23 @@ def get_stations():
     the_response.mimetype = 'application/json'
     return the_response
 
+#Add new station
+@users.route('/stations', methods=['POST'])
+def add_station():
+    current_app.logger.info('processing form data')
+    req_data = request.get_json()
+    current_app.logger.info(req_data)
+    
+    s_location = req_data['location']
+    s_capacity = req_data['capacity']
+
+    insert_stmt = 'INSERT into stations (location, capacity) VALUES ('
+    insert_stmt += s_location + ', ' + str(s_capacity) + ')'
+
+    current_app.logger.info(insert_stmt)
+
+    cursor = db.get_db().cursor()
+    cursor.execute(insert_stmt)
+    db.get_db().commit()
+    return 'Success'
+
