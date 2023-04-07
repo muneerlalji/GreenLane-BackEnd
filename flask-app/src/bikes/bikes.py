@@ -8,8 +8,7 @@ bikes = Blueprint('bikes', __name__)
 @bikes.route('/bikes', methods=['GET'])
 def get_bikes():
     cursor = db.get_db().cursor()
-    cursor.execute('select stationId, location,\
-        numBikes from stations')
+    cursor.execute('select bikeID, status, location, maintenence_status from bikes')
     row_headers = [x[0] for x in cursor.description]
     json_data = []
     theData = cursor.fetchall()
@@ -39,3 +38,33 @@ def add_bike():
     cursor.execute(insert_stmt)
     db.get_db().commit()
     return 'Success'
+
+# Get all availible bikes from the DB
+@bikes.route('/bikes', methods=['GET'])
+def get_bikes():
+    cursor = db.get_db().cursor()
+    cursor.execute('select bikeID, location from bikes where status = "availible"')
+    row_headers = [x[0] for x in cursor.description]
+    json_data = []
+    theData = cursor.fetchall()
+    for row in theData:
+        json_data.append(dict(zip(row_headers, row)))
+    the_response = make_response(jsonify(json_data))
+    the_response.status_code = 200
+    the_response.mimetype = 'application/json'
+    return the_response
+
+#Get user with a particular email
+@users.route('/bikes/<city>', methods=['GET'])
+def get_user(city):
+    cursor = db.get_db().cursor()
+    cursor.execute('select * from customers where city_id = {0}'.format(city)) #TODO fix query
+    row_headers = [x[0] for x in cursor.description]
+    json_data = []
+    theData = cursor.fetchall()
+    for row in theData:
+        json_data.append(dict(zip(row_headers, row)))
+    the_response = make_response(jsonify(json_data))
+    the_response.status_code = 200
+    the_response.mimetype = 'application/json'
+    return the_response

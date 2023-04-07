@@ -8,8 +8,7 @@ stations = Blueprint('stations', __name__)
 @stations.route('/stations', methods=['GET'])
 def get_stations():
     cursor = db.get_db().cursor()
-    cursor.execute('select stationId, location,\
-        numBikes from stations')
+    cursor.execute('select * from stations')
     row_headers = [x[0] for x in cursor.description]
     json_data = []
     theData = cursor.fetchall()
