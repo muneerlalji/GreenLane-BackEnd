@@ -20,7 +20,7 @@ def get_bikes():
     return the_response
 
 #Add new bike
-@users.route('/bikes', methods=['POST'])
+@bikes.route('/bikes', methods=['POST'])
 def add_bike():
     current_app.logger.info('processing form data')
     req_data = request.get_json()
