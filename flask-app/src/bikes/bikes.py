@@ -40,8 +40,8 @@ def add_bike():
     return 'Success'
 
 #Get bikes in a particular city
-@users.route('/bikes/<city>', methods=['GET'])
-def get_user(city):
+@bikes.route('/bikes/<city>', methods=['GET'])
+def get_bike(city):
     cursor = db.get_db().cursor()
     cursor.execute('select * from bikes where city_id = {0}'.format(city)) #TODO fix query
     row_headers = [x[0] for x in cursor.description]
