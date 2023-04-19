@@ -49,11 +49,10 @@ create table Users (
 create table DockingStation (
     stationID int not null AUTO_INCREMENT,
     docks int,
-    loc varchar(50),
+    cityID int not null,
     numBikes int,
-    C_cityID int not null,
     primary key (stationID),
-    Constraint fk_5 FOREIGN KEY (C_cityID) REFERENCES City(cityID)
+    Constraint fk_5 FOREIGN KEY (cityID) REFERENCES City(cityID)
 );
 
 create table WorkOrders (
