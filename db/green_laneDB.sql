@@ -16,8 +16,10 @@ create table Bikes (
     type varchar(50),
     location varchar(50),
     DS_stationID int not null,
+    C_cityID int not null,
     primary key (bikeID),
     FOREIGN KEY (DS_stationID) REFERENCES DockingStation(stationID)
+    FOREIGN KEY (C_cityID) REFERENCES City(cityID)
 
 );
 
@@ -50,9 +52,9 @@ create table DockingStation (
     docks int,
     location varchar(50),
     numBikes int,
-    B_bikeID int,
+    C_cityID int not null,
     primary key (stationID),
-    FOREIGN KEY (B_bikeID) REFERENCES Bikes(bikeID)
+    FOREIGN KEY (C_cityID) REFERENCES City(cityID)
 );
 
 create table WorkOrders (
