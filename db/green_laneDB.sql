@@ -104,4 +104,30 @@ create table RideHistory (
 
 
 
-)
+);
+
+create table lookupReport (
+    typeOfReport varchar(50),
+    reportTypeID int not null
+);
+
+insert into lookupReport
+values ('electrical', '1');
+insert into lookupReport
+values ('physical', '2');
+insert into lookupReport
+values ('systems', '3');
+insert into lookupReport
+values ('gps', '4');
+insert into lookupReport
+values ('software', '5');
+
+create table lookupBikeType (
+    bikeType varchar(50),
+    bikeTypeID int not null
+);
+
+insert into lookupBikeType
+values ('pedal bike', '1');
+insert into lookupBikeType
+values ('electric motor', '2');
