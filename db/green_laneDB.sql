@@ -14,12 +14,11 @@ create table Bikes (
     maintenanceStatus boolean,
     rideStatus boolean,
     type varchar(50),
-    location varchar(50),
     DS_stationID int not null,
     C_cityID int not null,
     primary key (bikeID),
-    FOREIGN KEY (DS_stationID) REFERENCES DockingStation(stationID)
-    FOREIGN KEY (C_cityID) REFERENCES City(cityID)
+    Constraint fk_1 FOREIGN KEY (DS_stationID) REFERENCES DockingStation(stationID),
+    Constraint fk_2 FOREIGN KEY (C_cityID) REFERENCES City(cityID)
 
 );
 
@@ -30,7 +29,7 @@ create table City (
     numBikes int,
     B_bikeID int,
     primary key (cityID),
-    FOREIGN KEY (B_bikeID) REFERENCES Bikes(bikeID)
+    Constraint fk_3 FOREIGN KEY (B_bikeID) REFERENCES Bikes(bikeID)
 
 
 );
@@ -44,7 +43,7 @@ create table Users (
     email varchar(100) unique not null,
     CR_rideID int,
     primary key (userID),
-    FOREIGN KEY (CR_rideID) references CurrentRide(rideID)
+    Constraint fk_4 FOREIGN KEY (CR_rideID) references CurrentRide(rideID)
 );
 
 create table DockingStation (
@@ -54,7 +53,7 @@ create table DockingStation (
     numBikes int,
     C_cityID int not null,
     primary key (stationID),
-    FOREIGN KEY (C_cityID) REFERENCES City(cityID)
+    Constraint fk_5 FOREIGN KEY (C_cityID) REFERENCES City(cityID)
 );
 
 create table WorkOrders (
@@ -66,8 +65,8 @@ create table WorkOrders (
     B_bikeID int,
     E_employeeID int,
     primary key (reportID),
-    foreign key (B_bikeID) references Bikes(bikeID),
-    foreign key (E_employeeID) references RepairCrew(employeeID)
+    Constraint fk_6 foreign key (B_bikeID) references Bikes(bikeID),
+    Constraint fk_7 foreign key (E_employeeID) references RepairCrew(employeeID)
 
 );
 
@@ -78,7 +77,7 @@ create table RepairCrew (
     fName varchar(50),
     R_reportID int,
     primary key (employeeID),
-    foreign key (R_reportID) references WorkOrders(reportID)
+    Constraint fk_8 foreign key (R_reportID) references WorkOrders(reportID)
 );
 
 create table CurrentRide (
@@ -87,8 +86,8 @@ create table CurrentRide (
     U_userID int,
     startTime datetime default CURRENT_TIMESTAMP,
     PRIMARY KEY (rideID),
-    FOREIGN KEY (U_userID) REFERENCES Users(userID),
-    FOREIGN KEY (B_bikeID) REFERENCES Bikes(bikeID)
+    Constraint fk_9 FOREIGN KEY (U_userID) REFERENCES Users(userID),
+    Constraint fk_10 FOREIGN KEY (B_bikeID) REFERENCES Bikes(bikeID)
 
 );
 
@@ -101,7 +100,7 @@ create table RideHistory (
     rating int CHECK (rating >= 1 AND rating <= 5),
     CR_rideID int,
     primary key (historyID),
-    foreign key (CR_rideID) references CurrentRide(rideID)
+    Constraint fk_11 foreign key (CR_rideID) references CurrentRide(rideID)
 
 
 

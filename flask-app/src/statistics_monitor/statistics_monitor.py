@@ -8,7 +8,7 @@ statistics_monitor = Blueprint('statistics_monitor', __name__)
 @statistics_monitor.route('/users', methods=['GET'])
 def get_all_users():
     cursor = db.get_db().cursor()
-    cursor.execute('select * from users')
+    cursor.execute('select * from Users')
     row_headers = [x[0] for x in cursor.description]
     json_data = []
     theData = cursor.fetchall()
