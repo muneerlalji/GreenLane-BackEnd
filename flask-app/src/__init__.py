@@ -32,10 +32,11 @@ def create_app():
     # Import the various routes
     from src.views import views
     from src.users.users import users
+    from src.statistics_monitor.statistics_monitor import statistics_monitor
 
 
     # Register the routes that we just imported so they can be properly handled
     app.register_blueprint(users,       url_prefix='/u')
-    app.register_blueprint(users,       url_prefix='/s')
+    app.register_blueprint(statistics_monitor,       url_prefix='/s')
 
     return app
