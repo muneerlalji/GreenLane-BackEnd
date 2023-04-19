@@ -24,7 +24,7 @@ create table Bikes (
 
 create table City (
     cityID int not null AUTO_INCREMENT,
-    location varchar(50),
+    name varchar(50),
     numStations int,
     numBikes int,
     B_bikeID int,

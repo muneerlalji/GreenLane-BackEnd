@@ -32,8 +32,7 @@ def add_user():
     u_dob = req_data['dob']
     u_address = req_data['address']
 
-    insert_stmt = 'INSERT into Users (first_name, last_name, email, dob, address) VALUES ('
-    insert_stmt += u_first + ', ' + u_last + ", " + u_email + ", " + u_dob + ", " + u_address + ')'
+    insert_stmt = f'INSERT INTO Users (userID, lName, fName, email, dob, address) VALUES (1, {u_last}, {u_first}, {u_email}, {u_dob}, {u_address});'
 
     current_app.logger.info(insert_stmt)
 
@@ -42,22 +41,53 @@ def add_user():
     db.get_db().commit()
     return 'Success'
 
-#Change bike usage status
-@users.route('/bikes/<bikeID>', methods=['PUT'])
-def change_bike_status(bikeID):
+# Insert Bike into Docking Station
+@users.route('/bikes/<bikeID>/<stationID>', methods=['PUT'])
+def insert_bike(bikeID, stationID):
     current_app.logger.info('processing form data')
     req_data = request.get_json()
     current_app.logger.info(req_data)
-    
-    new_status = req_data['status']
 
-    update_stmt = 'UPDATE Bikes SET rideStatus '
-    update_stmt += new_status + ' WHERE bikeID = ' + bikeID + ';'
-
-    current_app.logger.info(update_stmt)
+    num_bikes = f'SELECT numBikes FROM DockingStation WHERE stationID = {stationID}'
 
     cursor = db.get_db().cursor()
-    cursor.execute(update_stmt)
+    cursor.execute(num_bikes)
+    theData = cursor.fetchall()
+
+    update_stmt1 = 'UPDATE Bikes SET rideStatus = false WHERE bikeID = ' + bikeID + ';'
+    update_stmt2 = f'UPDATE DokcingStation SET numBikes = {str(theData[0] + 1)} WHERE bikeID = ' + bikeID + ';'
+
+    current_app.logger.info(update_stmt1)
+    current_app.logger.info(update_stmt2)
+
+    cursor = db.get_db().cursor()
+    cursor.execute(update_stmt1)
+    cursor.execute(update_stmt2)
+    db.get_db().commit()
+    return 'Success'
+
+# Remove Bike from DockingStation
+@users.route('/bikes/<bikeID>/<stationID>', methods=['PUT'])
+def remove_bike(bikeID, stationID):
+    current_app.logger.info('processing form data')
+    req_data = request.get_json()
+    current_app.logger.info(req_data)
+
+    num_bikes = f'SELECT numBikes FROM DockingStation WHERE stationID = {stationID}'
+
+    cursor = db.get_db().cursor()
+    cursor.execute(num_bikes)
+    theData = cursor.fetchall()
+
+    update_stmt1 = 'UPDATE Bikes SET rideStatus = true WHERE bikeID = ' + bikeID + ';'
+    update_stmt2 = f'UPDATE DokcingStation SET numBikes = {str(theData[0] - 1)} WHERE bikeID = ' + bikeID + ';'
+
+    current_app.logger.info(update_stmt1)
+    current_app.logger.info(update_stmt2)
+
+    cursor = db.get_db().cursor()
+    cursor.execute(update_stmt1)
+    cursor.execute(update_stmt2)
     db.get_db().commit()
     return 'Success'
 
@@ -77,7 +107,7 @@ def get_bike_city(city):
     return the_response
 
 #Get all stations in a particular city
-@users.route('/city/<city>', methods=['GET'])
+@users.route('/stations/<city>', methods=['GET'])
 def get_station_city(city):
     cursor = db.get_db().cursor()
     cursor.execute(f'select * from DockingStation where C_cityID = {city}')
@@ -90,3 +120,34 @@ def get_station_city(city):
     the_response.status_code = 200
     the_response.mimetype = 'application/json'
     return the_response
+
+# Delete User account
+@users.route('/users/<email>', methods=['DELETE'])
+def delete_account(email):
+    current_app.logger.info('processing form data')
+    req_data = request.get_json()
+    current_app.logger.info(req_data)
+
+    delete_stmt = f'DELETE FROM Users WHERE email = {email}'
+    current_app.logger.info(delete_stmt)
+
+    cursor = db.get_db().cursor()
+    cursor.execute(delete_stmt)
+    db.get_db().commit()
+    return 'Success'
+
+# Get all Cities
+@users.route('cities', methods=['GET'])
+def get_all_cities():
+    cursor = db.get_db().cursor()
+    cursor.execute('Select * From City')
+    row_headers = [x[0] for x in cursor.description]
+    json_data = []
+    theData = cursor.fetchall()
+    for row in theData:
+        json_data.append(dict(zip(row_headers, row)))
+    the_response = make_response(jsonify(json_data))
+    the_response.status_code = 200
+    the_response.mimetype = 'application/json'
+    return the_response
+

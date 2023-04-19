@@ -41,13 +41,12 @@ def add_station():
     req_data = request.get_json()
     current_app.logger.info(req_data)
     
-    docks = req_data['docks']
+    docks = str(req_data['docks'])
     location = req_data['location']
-    num_bikes = 0
-    city = req_data['city']
+    num_bikes = str(0)
+    city = str(req_data['city'])
 
-    insert_stmt = 'INSERT into DockingStation (docks, location, numBikes, C_cityID) VALUES ('
-    insert_stmt += docks + ', ' + location + ", " + num_bikes + ", " + city + ')'
+    insert_stmt = f'INSERT INTO DockingStation (docks, location, numBikes, C_cityID) VALUES ({docks}, \'{location}\', {num_bikes}, {city})'
 
     current_app.logger.info(insert_stmt)
 
@@ -56,7 +55,7 @@ def add_station():
     db.get_db().commit()
     return 'Success'
 
-#Add new bike
+# Add new bike
 @statistics_monitor.route('/bikes', methods=['POST'])
 def add_bike():
     current_app.logger.info('processing form data')
@@ -79,3 +78,67 @@ def add_bike():
     cursor.execute(insert_stmt)
     db.get_db().commit()
     return 'Success'
+
+# Delete Docking Station
+@statistics_monitor.route('/stations/<stationID>', methods=['DELETE'])
+def delete_station(stationID):
+    current_app.logger.info('processing form data')
+    req_data = request.get_json()
+    current_app.logger.info(req_data)
+
+    delete_stmt = f'DELETE FROM stations WHERE stationID = {stationID}'
+    current_app.logger.info(delete_stmt)
+
+    cursor = db.get_db().cursor()
+    cursor.execute(delete_stmt)
+    db.get_db().commit()
+    return 'Success'
+
+#Get all stations in a particular city
+@statistics_monitor.route('/stations/<city>', methods=['GET'])
+def get_station_city(city):
+    cursor = db.get_db().cursor()
+    cursor.execute(f'select * from DockingStation where C_cityID = {city}')
+    row_headers = [x[0] for x in cursor.description]
+    json_data = []
+    theData = cursor.fetchall()
+    for row in theData:
+        json_data.append(dict(zip(row_headers, row)))
+    the_response = make_response(jsonify(json_data))
+    the_response.status_code = 200
+    the_response.mimetype = 'application/json'
+    return the_response
+
+#Change storage capacity
+@statistics_monitor.route('/stations/<stationID>', methods=['PUT'])
+def change_bike_status(stationID):
+    current_app.logger.info('processing form data')
+    req_data = request.get_json()
+    current_app.logger.info(req_data)
+    
+    docks = req_data['docks']
+
+    update_stmt = 'UPDATE Bikes SET docks = '
+    update_stmt += docks + ' WHERE stationID = ' + stationID + ';'
+
+    current_app.logger.info(update_stmt)
+
+    cursor = db.get_db().cursor()
+    cursor.execute(update_stmt)
+    db.get_db().commit()
+    return 'Success'
+
+#Get all cities
+@statistics_monitor.route('/cities', methods=['GET'])
+def get_all_cities():
+    cursor = db.get_db().cursor()
+    cursor.execute('Select * From City')
+    row_headers = [x[0] for x in cursor.description]
+    json_data = []
+    theData = cursor.fetchall()
+    for row in theData:
+        json_data.append(dict(zip(row_headers, row)))
+    the_response = make_response(jsonify(json_data))
+    the_response.status_code = 200
+    the_response.mimetype = 'application/json'
+    return the_response
