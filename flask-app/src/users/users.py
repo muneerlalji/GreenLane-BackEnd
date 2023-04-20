@@ -7,10 +7,10 @@ users = Blueprint('users', __name__)
 # Get user with a particular ID
 
 
-@users.route('/users/<userID>', methods=['GET'])
-def get_user(userID):
+@users.route('/users/<email>', methods=['GET'])
+def get_user(email):
     cursor = db.get_db().cursor()
-    cursor.execute(f'select * from Users where userID = {userID}')
+    cursor.execute(f'select * from Users where email = \'{email}\'')
     row_headers = [x[0] for x in cursor.description]
     json_data = []
     theData = cursor.fetchall()
@@ -109,7 +109,7 @@ def remove_bike(bikeID, stationID):
     current_app.logger.info(bike_ride_status)
     current_app.logger.info(bike_docking_station)
 
-    update_stmt1 = 'UPDATE Bikes SET rideStatus = false WHERE bikeID = ' + bikeID + ';'
+    update_stmt1 = 'UPDATE Bikes SET rideStatus = true WHERE bikeID = ' + bikeID + ';'
     update_stmt2 = 'UPDATE Bikes SET DS_stationID = null WHERE bikeID =  ' + bikeID + ';'
     update_stmt3 = f'UPDATE DockingStation SET numBikes = {num_bikes - 1} WHERE stationID = ' + \
         stationID + ';'
@@ -130,7 +130,7 @@ def remove_bike(bikeID, stationID):
 @users.route('/bikes/<cityID>', methods=['GET'])
 def get_bike_city(cityID):
     cursor = db.get_db().cursor()
-    cursor.execute(f'select * from Bikes where cityID = {cityID}')
+    cursor.execute(f'select * from Bikes WHERE C_cityID = {cityID} AND rideStatus = false')
     row_headers = [x[0] for x in cursor.description]
     json_data = []
     theData = cursor.fetchall()
@@ -174,12 +174,10 @@ def delete_account(userID):
     return 'Successfully removed user!'
 
 # Get all Cities
-
-
 @users.route('cities', methods=['GET'])
 def get_all_cities():
     cursor = db.get_db().cursor()
-    cursor.execute('Select * From City')
+    cursor.execute('Select cityName as label, cityID as value From City')
     row_headers = [x[0] for x in cursor.description]
     json_data = []
     theData = cursor.fetchall()
