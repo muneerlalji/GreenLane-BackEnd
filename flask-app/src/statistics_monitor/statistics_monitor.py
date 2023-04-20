@@ -42,11 +42,10 @@ def add_station():
     current_app.logger.info(req_data)
     
     docks = str(req_data['docks'])
-    location = req_data['location']
     num_bikes = str(0)
     city = str(req_data['city'])
 
-    insert_stmt = f'INSERT INTO DockingStation (docks, location, numBikes, C_cityID) VALUES ({docks}, \'{location}\', {num_bikes}, {city})'
+    insert_stmt = f'INSERT INTO DockingStation (docks, cityID, numBikes) VALUES ({docks}, {city}, {num_bikes})'
 
     current_app.logger.info(insert_stmt)
 
