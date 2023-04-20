@@ -14,7 +14,7 @@ create table Bikes (
     maintenanceStatus boolean,
     rideStatus boolean,
     bikeType varchar(50),
-    DS_stationID int not null,
+    DS_stationID int,
     C_cityID int not null,
     primary key (bikeID),
     Constraint fk_1 FOREIGN KEY (DS_stationID) REFERENCES DockingStation(stationID),

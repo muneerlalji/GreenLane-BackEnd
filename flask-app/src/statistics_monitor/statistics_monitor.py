@@ -63,18 +63,25 @@ def add_bike():
     
     maintenance_status = 'false'
     ride_status = 'false'
-    type = req_data['type']
-    location = req_data['location']
     station = req_data['station']
     city = req_data['city']
 
-    insert_stmt = 'INSERT into Bikes (maintenenceStatus, rideStatus, type, location, DS_stationID, C_cityID) VALUES ('
-    insert_stmt += maintenance_status + ', ' + ride_status + ", " + type + ", " + location + ', ' + station + ', ' + city + ')'
+    num_bikes = f'SELECT numBikes FROM DockingStation WHERE stationID = {station};'
+
+    cursor = db.get_db().cursor()
+    cursor.execute(num_bikes)
+    theData = cursor.fetchall()
+
+    insert_stmt = 'INSERT into Bikes (maintenanceStatus, rideStatus, DS_stationID, C_cityID) VALUES ('
+    insert_stmt += maintenance_status + ', ' + ride_status + ', ' + str(station) + ', ' + str(city) + ');'
+    update_stmt = f'UPDATE DockingStation SET numBikes = {theData[0][0] + 1} WHERE stationID = {station};'
 
     current_app.logger.info(insert_stmt)
+    current_app.logger.info(update_stmt)
 
     cursor = db.get_db().cursor()
     cursor.execute(insert_stmt)
+    cursor.execute(update_stmt)
     db.get_db().commit()
     return 'Success'
 
@@ -82,13 +89,15 @@ def add_bike():
 @statistics_monitor.route('/stations/<stationID>', methods=['DELETE'])
 def delete_station(stationID):
     current_app.logger.info('processing form data')
-    req_data = request.get_json()
-    current_app.logger.info(req_data)
 
-    delete_stmt = f'DELETE FROM stations WHERE stationID = {stationID}'
+    delete_stmt = f'DELETE FROM DockingStation WHERE stationID = {stationID}'
     current_app.logger.info(delete_stmt)
 
+    update_stmt = f'UPDATE Bikes SET DS_stationID = null WHERE DS_stationID = {stationID}'
+    current_app.logger.info(update_stmt)
+
     cursor = db.get_db().cursor()
+    cursor.execute(update_stmt)
     cursor.execute(delete_stmt)
     db.get_db().commit()
     return 'Success'
@@ -97,7 +106,7 @@ def delete_station(stationID):
 @statistics_monitor.route('/stations/<city>', methods=['GET'])
 def get_station_city(city):
     cursor = db.get_db().cursor()
-    cursor.execute(f'select * from DockingStation where C_cityID = {city}')
+    cursor.execute(f'select * from DockingStation where cityID = {city}')
     row_headers = [x[0] for x in cursor.description]
     json_data = []
     theData = cursor.fetchall()
@@ -110,15 +119,15 @@ def get_station_city(city):
 
 #Change storage capacity
 @statistics_monitor.route('/stations/<stationID>', methods=['PUT'])
-def change_bike_status(stationID):
+def change_storage_capacity(stationID):
     current_app.logger.info('processing form data')
     req_data = request.get_json()
     current_app.logger.info(req_data)
     
     docks = req_data['docks']
 
-    update_stmt = 'UPDATE Bikes SET docks = '
-    update_stmt += docks + ' WHERE stationID = ' + stationID + ';'
+    update_stmt = 'UPDATE DockingStation SET docks = '
+    update_stmt += str(docks) + ' WHERE stationID = ' + str(stationID) + ';'
 
     current_app.logger.info(update_stmt)
 

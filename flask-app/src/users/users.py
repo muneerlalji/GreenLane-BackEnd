@@ -5,8 +5,6 @@ from src import db
 users = Blueprint('users', __name__)
 
 # Get user with a particular ID
-
-
 @users.route('/users/<userID>', methods=['GET'])
 def get_user(userID):
     cursor = db.get_db().cursor()
@@ -23,8 +21,6 @@ def get_user(userID):
 
 # Add new user
 # TODO Find a way to get the next userID number to insert a new user into db.
-
-
 @users.route('/users', methods=['POST'])
 def add_user():
     current_app.logger.info('processing form data')
@@ -47,8 +43,6 @@ def add_user():
     return 'Success'
 
 # Insert Bike into Docking Station
-
-
 @users.route('/bikes/<bikeID>/<stationID>', methods=['PUT'])
 def insert_bike(bikeID, stationID):
     current_app.logger.info('processing form data')
@@ -75,8 +69,6 @@ def insert_bike(bikeID, stationID):
     return 'Success'
 
 # Remove Bike from DockingStation
-
-
 @users.route('/bikes/<bikeID>/<stationID>', methods=['PUT'])
 def remove_bike(bikeID, stationID):
     current_app.logger.info('processing form data')
@@ -103,8 +95,6 @@ def remove_bike(bikeID, stationID):
     return 'Success'
 
 # Get all bikes in a particular city
-
-
 @users.route('/bikes/<city>', methods=['GET'])
 def get_bike_city(city):
     cursor = db.get_db().cursor()
@@ -120,8 +110,6 @@ def get_bike_city(city):
     return the_response
 
 # Get all stations in a particular city
-
-
 @users.route('/stations/<city>', methods=['GET'])
 def get_station_city(city):
     cursor = db.get_db().cursor()
@@ -137,8 +125,6 @@ def get_station_city(city):
     return the_response
 
 # Delete User account
-
-
 @users.route('/users/<userID>', methods=['DELETE'])
 def delete_account(userID):
     current_app.logger.info('processing form data')
@@ -154,8 +140,6 @@ def delete_account(userID):
     return 'Success'
 
 # Get all Cities
-
-
 @users.route('cities', methods=['GET'])
 def get_all_cities():
     cursor = db.get_db().cursor()
