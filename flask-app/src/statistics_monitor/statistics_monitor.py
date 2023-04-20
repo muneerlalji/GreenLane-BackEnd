@@ -4,7 +4,9 @@ from src import db
 
 statistics_monitor = Blueprint('statistics_monitor', __name__)
 
-#Get all users
+# Get all users
+
+
 @statistics_monitor.route('/users', methods=['GET'])
 def get_all_users():
     cursor = db.get_db().cursor()
@@ -19,7 +21,9 @@ def get_all_users():
     the_response.mimetype = 'application/json'
     return the_response
 
-#Get all docking stations
+# Get all docking stations
+
+
 @statistics_monitor.route('/stations', methods=['GET'])
 def get_all_stations():
     cursor = db.get_db().cursor()
@@ -34,13 +38,15 @@ def get_all_stations():
     the_response.mimetype = 'application/json'
     return the_response
 
-#Add new station
+# Add new station
+
+
 @statistics_monitor.route('/stations', methods=['POST'])
 def add_station():
     current_app.logger.info('processing form data')
     req_data = request.get_json()
     current_app.logger.info(req_data)
-    
+
     docks = str(req_data['docks'])
     num_bikes = str(0)
     city = str(req_data['city'])
@@ -55,12 +61,14 @@ def add_station():
     return 'Success'
 
 # Add new bike
+
+
 @statistics_monitor.route('/bikes', methods=['POST'])
 def add_bike():
     current_app.logger.info('processing form data')
     req_data = request.get_json()
     current_app.logger.info(req_data)
-    
+
     maintenance_status = 'false'
     ride_status = 'false'
     station = req_data['station']
@@ -73,7 +81,8 @@ def add_bike():
     theData = cursor.fetchall()
 
     insert_stmt = 'INSERT into Bikes (maintenanceStatus, rideStatus, DS_stationID, C_cityID) VALUES ('
-    insert_stmt += maintenance_status + ', ' + ride_status + ', ' + str(station) + ', ' + str(city) + ');'
+    insert_stmt += maintenance_status + ', ' + ride_status + \
+        ', ' + str(station) + ', ' + str(city) + ');'
     update_stmt = f'UPDATE DockingStation SET numBikes = {theData[0][0] + 1} WHERE stationID = {station};'
 
     current_app.logger.info(insert_stmt)
@@ -86,6 +95,8 @@ def add_bike():
     return 'Success'
 
 # Delete Docking Station
+
+
 @statistics_monitor.route('/stations/<stationID>', methods=['DELETE'])
 def delete_station(stationID):
     current_app.logger.info('processing form data')
@@ -102,7 +113,9 @@ def delete_station(stationID):
     db.get_db().commit()
     return 'Success'
 
-#Get all stations in a particular city
+# Get all stations in a particular city
+
+
 @statistics_monitor.route('/stations/<city>', methods=['GET'])
 def get_station_city(city):
     cursor = db.get_db().cursor()
@@ -117,13 +130,15 @@ def get_station_city(city):
     the_response.mimetype = 'application/json'
     return the_response
 
-#Change storage capacity
+# Change storage capacity
+
+
 @statistics_monitor.route('/stations/<stationID>', methods=['PUT'])
 def change_storage_capacity(stationID):
     current_app.logger.info('processing form data')
     req_data = request.get_json()
     current_app.logger.info(req_data)
-    
+
     docks = req_data['docks']
 
     update_stmt = 'UPDATE DockingStation SET docks = '
@@ -136,11 +151,14 @@ def change_storage_capacity(stationID):
     db.get_db().commit()
     return 'Success'
 
-#Get all cities
+# Get all cities
+
+
 @statistics_monitor.route('/cities', methods=['GET'])
 def get_all_cities():
     cursor = db.get_db().cursor()
-    cursor.execute('Select * From City')
+    cursor.execute(
+        'Select cityName as label, cityID as value FROM City')
     row_headers = [x[0] for x in cursor.description]
     json_data = []
     theData = cursor.fetchall()
