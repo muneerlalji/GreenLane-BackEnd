@@ -130,7 +130,7 @@ def remove_bike(bikeID, stationID):
 @users.route('/bikes/<cityID>', methods=['GET'])
 def get_bike_city(cityID):
     cursor = db.get_db().cursor()
-    cursor.execute(f'select * from Bikes where C_cityID = {cityID}')
+    cursor.execute(f'select * from Bikes where cityID = {cityID}')
     row_headers = [x[0] for x in cursor.description]
     json_data = []
     theData = cursor.fetchall()
